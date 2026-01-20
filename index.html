@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <!--- fait par @Djahniss (GitHub) dans le cadre d'une pfmp au CDOS Tarn --->
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach CDOS Tarn</title>
+    <link rel="stylesheet" href="index.css?v=1.1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+</head>
+<body>
+    <div id="loading-screen" style="text-align: center; margin-top: 100px;">
+        <h2>🔄 Chargement de votre profil...</h2>
+    </div>
+    <div id="bloc-connexion" class="login-card">
+    <div class="login-header">
+        <h1>
+            Le Coach Tarnais
+        </h1>
+        <p>Connecte-toi pour suivre tes progrès</p>
+    </div>
+
+    <div class="input-group">
+        <input type="email" id="emailInput" placeholder="Email" required>
+        <input type="password" id="mdpInput" placeholder="Mot de passe" required>
+    </div>
+    
+    <div class="action-buttons">
+        <button id="btnConnexion" class="btn-primary">Se connecter</button>
+        <button id="btnInscription" class="btn-secondary">Créer un compte</button>
+    </div>
+    
+    <div class="login-footer">
+        <p id="messageErreur" class="error-msg"></p>
+        <p id="messageSuccess" class="success-msg"></p>
+    </div>
+</div>
+<div id="app-container" style="display: none;">
+    <header>
+        <h1>Le Coach Tarnais</h1>
+        <p>Partenaire CDOS Tarn</p>
+    </header>
+
+    <div id="day-content-wrapper">
+
+        <div class="progress-section">
+            <div class="date-navigation" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 10px;">
+        <button id="btn-prev-day" class="nav-arrow">⬅️</button>
+        <div style="text-align: center;">
+            <h3 id="current-date-display" style="margin: 0; color: #666; font-size: 0.9rem;">Aujourd'hui</h3>
+            <h2 id="score-text" style="margin: 0; font-size: 1.2rem;">Score : 0%</h2>
+        </div>
+        <button id="btn-next-day" class="nav-arrow">➡️</button>
+        </div>
+                <div class="progress-track">
+            <div class="progress-fill" id="progress-bar"></div>
+        </div>
+        <br>
+    <h3 id="total-score-display" style="text-align: center; color: rgb(19, 19, 26); margin-top: 5px;">  <span id="blabla"></span> </h3>
+
+    </div>
+
+
+                <img id="img-moyenne" src="" alt="Niveau" style="width: 80px; height: 80px; display: none; margin: 10px auto;" />
+
+<p id="msg-motivation" style="text-align: center; font-weight: bold; font-style: italic; color: #555; margin-bottom: 15px;"></p>
+    </div>
+
+    <div class="goals-grid" id="goals-container">
+        </div>
+    <div style="text-align: center; margin: px;">
+    <button id="btnValiderJournee" style="
+        background-color: #4caf50; 
+        color: white; 
+        padding: 15px 30px; 
+        border: none; 
+        border-radius: 10px; 
+        font-size: 1.1rem; 
+        cursor: pointer; 
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        ✅ Valider ma journée
+    </button>
+    <p id="msgValidation" style="font-size: 0.9rem; margin-top: 10px;"></p>
+    </div>
+
+ <div class="bottom-actions-wrapper">
+    
+<div class="bottom-actions-wrapper">
+    
+    <div class="tools-grid">
+        
+        <button id="geo-btn" class="geo-btn btn-dark">
+            📍 Challenge
+        </button> 
+        
+        <button id="btnAmis" class="geo-btn btn-purple">
+            👥 Amis
+        </button>
+
+        <button id="btnExport" class="exportButton">
+            📂 Exporter
+        </button>
+
+        <button id="btn-settings" class="geo-btn btn-blue">
+            🔹 Paramètres
+        </button>
+
+    </div>
+
+    <button id="btnDeconnexion" class="decoButton">
+        Se déconnecter
+    </button>
+
+</div>
+    <footer>
+        &copy; 2026 CDOS Tarn - Projet Web App
+    </footer>
+    
+</div>
+<div id="challenge-modal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="modal-icon">🎯</span>
+        <h3 style="margin-top: 0;">Votre défi du moment</h3>
+        <p id="modal-challenge-text" class="challenge-text">...</p>
+        
+        <div class="modal-buttons">
+            <button id="btn-confirm-challenge" class="btn-validate-challenge">J'ai relevé le défi !</button>
+            <button id="btn-cancel-challenge" class="btn-close-modal">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<div id="friends-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 400px; padding: 20px;">
+        <h2 style="margin-top:0;">🤝 Mes Amis</h2>
+        
+        <div class="tabs">
+            <button id="tab-liste" class="tab-btn active">Mes Amis</button>
+            <button id="tab-ajout" class="tab-btn">Ajouter</button>
+            <button id="tab-demandes" class="tab-btn">Demandes <span id="badge-demandes" style="display:none">0</span></button>
+        </div>
+
+        <div id="content-liste" class="tab-content active">
+            <div id="friends-list-container" class="friends-scroll">
+                <p style="color:#666; font-size:0.9rem;">Chargement...</p>
+            </div>
+        </div>
+
+        <div id="content-ajout" class="tab-content" style="display:none;">
+            <p style="font-size:0.9rem;">Entre l'email de ton ami pour l'inviter :</p>
+            <input type="email" id="input-friend-email" placeholder="email@exemple.com" class="friend-input">
+            <button id="btn-send-invite" class="btn-validate-challenge" style="margin-top:10px; width:100%;">Envoyer l'invitation</button>
+            <p id="invite-feedback" style="font-size:0.8rem; margin-top:10px; height:20px;"></p>
+        </div>
+
+        <div id="content-demandes" class="tab-content" style="display:none;">
+            <div id="requests-list-container">
+                <p style="color:#666;">Aucune demande en attente.</p>
+            </div>
+        </div>
+
+        <button id="btn-close-friends" class="btn-close-modal" style="margin-top: 20px; width:100%;">Fermer</button>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay">
+    <div class="modal-card">
+        <h3>🔐 Sécurité du compte</h3>
+        <br></br>
+
+        <div class="input-group" style="text-align: left;">
+            <label style="font-size:0.8rem; font-weight:bold; color:#333;">Nouvelle adresse email</label>
+            <input type="email" id="settings-new-email" placeholder="nouvel.email@exemple.com">
+        </div>
+        <button id="btn-save-email" class="btn-primary" style=" width: 100%; border:none; background: #2196F3;">
+            Mettre à jour l'email
+        </button>
+
+        <br></br>
+
+        <div class="input-group" style="text-align: left;">
+            <label style="font-size:0.8rem; font-weight:bold; color:#333;">Nouveau mot de passe</label>
+            <input type="password" id="settings-new-password" placeholder="6 caractères minimum">
+        </div>
+
+        <button id="btn-save-password" class="btn-primary" style=" width: 100%; border:none;">
+            Mettre à jour le mot de passe
+        </button>
+        
+        <br></br>
+        <br></br>
+
+        <div class="account-action-group>">
+            <button id="btn-delete-account" class="btn-dark " style=" width: 100%; border:none; background: #d32f2f; color: white; border-radius: 15px; padding:15px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+             🗑️ Supprimer mon compte définitivement
+            </button>
+        </div>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+        <button id="btn-close-settings" class="btn-close-modal" style="width: 100%;">
+            Annuler
+        </button>
+    </div>
+</div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+
+<script src="index.js?v=1.1" defer></script>
+
+<script type="module">
+    // 1. IMPORTS
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged,updateEmail,updatePassword,deleteUser,updateProfile, } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+    import { 
+    getFirestore, doc, setDoc, getDoc, updateDoc, increment, collection, getDocs, 
+    query, where, addDoc, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+    // 2. CONFIGURATION
+    const firebaseConfig = {
+      apiKey: "AIzaSyAagGhU-ViLDenCmvyTLbGA_IxZpoTlouc",
+      authDomain: "cdosdl.firebaseapp.com",
+      projectId: "cdosdl",
+      storageBucket: "cdosdl.firebasestorage.app",
+      messagingSenderId: "719346229534",
+      appId: "1:719346229534:web:b6607202acf0cb33f0290f",
+      measurementId: "G-TJYN73RHDC"
+    };
+
+    // 3. INITIALISATION
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUserUID = null;
+    let displayedDate = new Date();
+
+    function formatDateId(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function formatReadableDate(date) {
+        return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+    
+    // Variable globale
+    window.challengeValideGlobal = false; 
+    const emailInput = document.getElementById('emailInput');
+    const mdpInput = document.getElementById('mdpInput');
+    const msgErreur = document.getElementById('messageErreur');
+
+    // --- CHARGEMENT DES DONNÉES DU JOUR ---
+    async function loadDayData(date) {
+        if (!currentUserUID) return;
+        const dateId = formatDateId(date);
+        
+        // UI: Date et Boutons
+        const isToday = (dateId === formatDateId(new Date()));
+        const dateDisplay = document.getElementById('current-date-display');
+        if(dateDisplay) dateDisplay.innerText = isToday ? "Aujourd'hui" : formatReadableDate(date);
+        
+        const btnNext = document.getElementById('btn-next-day');
+        if(btnNext) btnNext.style.visibility = isToday ? "hidden" : "visible";
+
+        // Récupération Firebase Historique
+        const dayRef = doc(db, "users", currentUserUID, "history", dateId);
+        const docSnap = await getDoc(dayRef);
+
+        let dataToRender = null;
+        let challengeDone = false; // Par défaut : non fait
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            dataToRender = data.objectives;
+            // C'est ici que se fait la liaison avec le jour :
+            if (data.challengeDone === true) {
+                challengeDone = true;
+            }
+        }
+
+        // Mise à jour de la variable globale
+        window.challengeValideGlobal = challengeDone;
+        
+        // Mise à jour visuelle du bouton et des cartes
+        if (typeof updateChallengeUI === "function") updateChallengeUI(challengeDone);
+        if (typeof window.loadObjectivesFromExternal === "function") {
+            window.loadObjectivesFromExternal(dataToRender);
+        }
+    }
+
+    // --- SAUVEGARDE ET VALIDATION ---
+
+    // Sauvegarder les cartes (objectifs)
+    window.saveDayToFirebase = async function(objectivesList) {
+        if (!currentUserUID) return;
+        const dateId = formatDateId(displayedDate);
+        const dayRef = doc(db, "users", currentUserUID, "history", dateId);
+        await setDoc(dayRef, {
+            objectives: objectivesList,
+            lastUpdate: new Date()
+        }, { merge: true });
+    };
+
+    // Valider le challenge (appelé par le popup dans index.js)
+    window.validerChallengeFirebase = async function() {
+        if (!currentUserUID) return;
+        
+        // On utilise displayedDate pour lier le challenge au jour affiché
+        const dateId = formatDateId(displayedDate);
+        const userRef = doc(db, "users", currentUserUID);
+        const dayRef = doc(db, "users", currentUserUID, "history", dateId);
+
+        try {
+            // 1. Mise à jour Historique (Local au jour)
+            await setDoc(dayRef, { challengeDone: true }, { merge: true });
+
+            // 2. Mise à jour Profil (Dernière date globale)
+            await updateDoc(userRef, {
+                lastChallengeDate: new Date().toISOString().split('T')[0]
+            });
+
+            // 3. UI Updates
+            window.challengeValideGlobal = true;
+            updateChallengeUI(true);
+            render(); // Met à jour la barre de progression (+10%)
+
+            alert("Bravo ! +10 pts ajoutés pour cette journée !");
+            
+        } catch (error) {
+            console.error("Erreur validation challenge:", error);
+            alert("Erreur de connexion.");
+        }
+    };
+
+    // --- AUTHENTIFICATION & NAVIGATION ---
+
+    document.getElementById('btnInscription').addEventListener('click', () => {
+        createUserWithEmailAndPassword(auth, emailInput.value, mdpInput.value)
+            .then((userCredential) => { creerFicheUtilisateur(userCredential.user); })
+            .catch((error) => { msgErreur.innerText = "Erreur : " + error.message; });
+    });
+
+    document.getElementById('btnConnexion').addEventListener('click', () => {
+        signInWithEmailAndPassword(auth, emailInput.value, mdpInput.value)
+            .catch((error) => { msgErreur.innerText = "Erreur : " + error.message; });
+    });
+
+    document.getElementById('btnDeconnexion').addEventListener('click', () => {
+        signOut(auth);
+        location.reload();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        const loader = document.getElementById('loading-screen');
+        const loginBloc = document.getElementById('bloc-connexion');
+        const appContainer = document.getElementById('app-container');
+
+        if (user) {
+            currentUserUID = user.uid;
+            loginBloc.style.display = 'none';
+            loader.style.display = 'block';
+
+            // On charge TOUJOURS via loadDayData pour garantir la cohérence
+            displayedDate = new Date();
+            await loadDayData(displayedDate);
+            // --- AJOUT : Vérification du tutoriel ---
+    const userDocRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userDocRef);
+
+    if (userSnap.exists()) {
+        const userData = userSnap.data();
+        
+        // Si le champ 'tutoVu' n'existe pas ou est faux, on lance le tuto
+        if (!userData.tutoVu) {
+            // On attend un tout petit peu que le rendu graphique (render) soit fini
+            setTimeout(() => {
+                if (typeof window.lancerTuto === "function") {
+                    window.lancerTuto(() => {
+                        // Callback : une fois le tuto fini, on enregistre dans Firebase
+                        updateDoc(userDocRef, { tutoVu: true });
+                    });
+                }
+            }, 1000); // 1 seconde de délai pour être sûr que l'interface est affichée
+        }
+    }
+
+            // Gestion du Score Moyen (Thème)
+            const docRef = doc(db, "users", user.uid);
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const total = data.totalScore || 0;
+                    const jours = data.nbJoursValides || 0;
+                    let scoreMoyen = 0;
+                    if (jours > 0) scoreMoyen = Math.round(total / jours);
+
+                    document.getElementById('total-score-display').innerText = `Moyenne : ${scoreMoyen} %`;
+                    
+                    const imgElement = document.getElementById('img-moyenne');
+                    const msgElement = document.getElementById('msg-motivation');
+                    document.body.classList.remove('theme-bas', 'theme-moyen', 'theme-haut');
+
+                    if (scoreMoyen < 45) {
+                        imgElement.src = "./images/triste.png";
+                        msgElement.innerText = "Accroche-toi ! 💪";
+                        document.body.classList.add('theme-bas');
+                    } else if (scoreMoyen < 60) {
+                        imgElement.src = "./images/neutre.png";
+                        msgElement.innerText = "Bon début ! Continue ! 🏔️";
+                        document.body.classList.add('theme-moyen');
+                    } else {
+                        imgElement.src = "./images/content.png";
+                        msgElement.innerText = "Champion ! 🏆";
+                        document.body.classList.add('theme-haut');
+                    }
+                    imgElement.style.display = "block";
+                }
+            } catch (e) { console.error(e); }
+
+            loader.style.display = 'none';
+            appContainer.style.display = 'block';
+            if (typeof render === "function") render();
+
+        } else {
+            loader.style.display = 'none';
+            loginBloc.style.display = 'block';
+            appContainer.style.display = 'none';
+        }
+    });
+
+    // Navigation Dates
+
+    const contentWrapper = document.getElementById('day-content-wrapper');
+
+    function changeDayWithAnimation(direction) {
+        // 1. Définir les classes d'animation selon la direction
+        let classOut, classIn;
+        
+        if (direction === 'next') {
+            classOut = 'anim-out-left';  // Ça sort vers la gauche
+            classIn = 'anim-in-right';   // Ça rentre par la droite
+        } else {
+            classOut = 'anim-out-right'; // Ça sort vers la droite
+            classIn = 'anim-in-left';    // Ça rentre par la gauche
+        }
+
+        // 2. Lancer l'animation de sortie
+        contentWrapper.classList.remove('anim-in-left', 'anim-in-right'); // Nettoyage
+        contentWrapper.classList.add(classOut);
+
+        // 3. Attendre la fin de l'animation (300ms défini dans le CSS)
+        setTimeout(() => {
+            // Changement de date réel
+            if (direction === 'next') {
+                displayedDate.setDate(displayedDate.getDate() + 1);
+            } else {
+                displayedDate.setDate(displayedDate.getDate() - 1);
+            }
+            
+            // Charger les données
+            loadDayData(displayedDate);
+
+            // 4. Lancer l'animation d'entrée
+            contentWrapper.classList.remove(classOut);
+            contentWrapper.classList.add(classIn);
+
+        }, 300); // Temps correspondant à animation-duration en CSS
+    }
+
+    // Bouton Précédent
+    if (document.getElementById('btn-prev-day')) {
+        document.getElementById('btn-prev-day').addEventListener('click', () => {
+            changeDayWithAnimation('prev');
+        });
+    }
+
+    // Bouton Suivant
+    if (document.getElementById('btn-next-day')) {
+        document.getElementById('btn-next-day').addEventListener('click', () => {
+            const today = new Date();
+            // On vérifie qu'on ne va pas dans le futur
+            if (formatDateId(displayedDate) !== formatDateId(today)) {
+                changeDayWithAnimation('next');
+            }
+        });
+    }
+    // Création fiche utilisateur
+    async function creerFicheUtilisateur(user) {
+        await setDoc(doc(db, "users", user.uid), {
+            email: user.email,
+            dateCreation: new Date(),
+            totalScore: 0,
+            nbJoursValides: 0,
+            tutoVu: false
+        });
+    }
+
+    // Validation globale de la journée (Bouton Vert)
+    document.getElementById('btnValiderJournee').addEventListener('click', async () => {
+        if (!currentUserUID) return;
+        const btn = document.getElementById('btnValiderJournee');
+        const msgBox = document.getElementById('msgValidation');
+        
+        btn.disabled = true; 
+        btn.innerText = "⏳ Sauvegarde...";
+        btn.style.backgroundColor = "#999"; // Gris
+        btn.style.color = "white";
+        btn.style.border = "none";
+        btn.style.padding = "15px 30px";
+        btn.style.borderRadius = "10px";
+        btn.style.fontSize = "1.1rem";
+        btn.style.transition = "background 0.2s";
+        btn.style.fontWeight = "bold";
+        btn.style.cursor = "";
+          
+        const dateIdCible = formatDateId(displayedDate); 
+        const objectifsActuels = window.currentObjectives || [];
+
+    const countDone = objectifsActuels.filter(obj => obj.etat === 3).length; // Vert (Validé)
+    const countDoing = objectifsActuels.filter(obj => obj.etat === 2).length; // Orange (En cours)
+
+    // On donne 25 pts pour le vert et 12.5 pts pour l'orange
+    let scoreDuJour = (countDone * 25) + (countDoing * 12.5);
+
+    if (window.challengeValideGlobal === true) scoreDuJour += 10;
+
+        const userRef = doc(db, "users", currentUserUID);
+        const dayRef = doc(db, "users", currentUserUID, "history", dateIdCible);
+        
+        try {
+            const daySnap = await getDoc(dayRef);
+            let ancienScore = 0;
+            let estDejaValide = false;
+
+            if (daySnap.exists() && daySnap.data().estValide === true) {
+                 estDejaValide = true;
+                 ancienScore = daySnap.data().scoreEnregistre || 0;
+            }
+
+            const differenceScore = scoreDuJour - ancienScore;
+
+            await updateDoc(userRef, {
+                totalScore: increment(differenceScore),
+                nbJoursValides: estDejaValide ? increment(0) : increment(1),
+                lastValidationDate: new Date().toISOString().split('T')[0]
+            });
+
+            await setDoc(dayRef, {
+                estValide: true,
+                scoreEnregistre: scoreDuJour,
+                lastUpdate: new Date()
+            }, { merge: true });
+
+            msgBox.style.color = "green";
+            msgBox.innerText = "🎉 Journée validée !";
+            setTimeout(() => { location.reload(); }, 1000);
+
+        } catch (error) {
+            console.error(error);
+            msgBox.style.color = "red";
+            msgBox.innerText = "❌ Erreur de connexion";
+            btn.disabled = false;
+            btn.innerText = "✅ Valider ma journée";
+        }
+    });
+
+    // --- FONCTION D'EXPORTATION CSV ---
+    document.getElementById('btnExport').addEventListener('click', async () => {
+        if (!currentUserUID) return;
+
+        const btn = document.getElementById('btnExport');
+        const originalText = btn.innerText;
+        btn.innerText = "⏳ Génération...";
+        btn.disabled = true;
+
+        try {
+            // 1. Récupération de l'historique complet
+            const historyRef = collection(db, "users", currentUserUID, "history");
+            const querySnapshot = await getDocs(historyRef);
+
+            if (querySnapshot.empty) {
+                alert("Aucune donnée à exporter pour le moment.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            // 2. Préparation des données CSV
+            // En-têtes du fichier Excel
+            let csvContent = "Date;Score (%);Challenge Validé;Bien Manger;Bien Être Mental;Bien s'Hydrater;Activité Physique\n";
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const dateId = doc.id; // La date (YYYY-MM-DD)
+                const score = data.scoreEnregistre || 0;
+                const challenge = data.challengeDone ? "OUI" : "NON";
+                
+                // Récupération des détails des objectifs s'ils existent
+                // On map les états : 0=Rien, 1=Raté, 2=Moyen, 3=Validé
+                let objDetails = ["-", "-", "-", "-"];
+                if (data.objectives && Array.isArray(data.objectives)) {
+                    objDetails = data.objectives.map(obj => {
+                        if(obj.etat === 3) return "Validé";
+                        if(obj.etat === 2) return "Moyen";
+                        if(obj.etat === 1) return "Raté";
+                        return "Non fait";
+                    });
+                }
+
+                // Construction de la ligne
+                // On utilise le point-virgule (;) car Excel français préfère ça aux virgules
+                const row = `${dateId};${score};${challenge};${objDetails[0]};${objDetails[1]};${objDetails[2]};${objDetails[3]}`;
+                csvContent += row + "\n";
+            });
+
+            // 3. Création et téléchargement du fichier
+            // Ajout du BOM (\uFEFF) pour que Excel reconnaisse bien les accents (UTF-8)
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `mon_suivi_coach_tarn_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            btn.innerText = "✅ Export réussi !";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 2000);
+
+        } catch (error) {
+            console.error("Erreur export:", error);
+            alert("Erreur lors de l'exportation.");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    // --- GESTION DU SYSTÈME D'AMIS ---
+
+    const friendsModal = document.getElementById('friends-modal');
+    const btnAmis = document.getElementById('btnAmis');
+    const btnCloseFriends = document.getElementById('btn-close-friends');
+
+    // Ouverture / Fermeture Modale
+    if(btnAmis) {
+        btnAmis.addEventListener('click', () => {
+            friendsModal.classList.add('active');
+            chargerMesAmis(); // Charger la liste à l'ouverture
+            verifierDemandesRecues(); // Vérifier les notifs
+        });
+    }
+    if(btnCloseFriends) {
+        btnCloseFriends.addEventListener('click', () => friendsModal.classList.remove('active'));
+    }
+
+    // Gestion des Onglets
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Retirer active de tous
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            
+            // Activer le cliqué
+            e.target.classList.add('active');
+            
+            if(e.target.id === 'tab-liste') {
+                document.getElementById('content-liste').style.display = 'block';
+                chargerMesAmis();
+            } else if (e.target.id === 'tab-ajout') {
+                document.getElementById('content-ajout').style.display = 'block';
+            } else if (e.target.id === 'tab-demandes') {
+                document.getElementById('content-demandes').style.display = 'block';
+                chargerDemandes();
+            }
+        });
+    });
+
+    // --- FONCTION 1 : ENVOYER UNE INVITATION ---
+    document.getElementById('btn-send-invite').addEventListener('click', async () => {
+        const emailCible = document.getElementById('input-friend-email').value.trim().toLowerCase();
+        const feedback = document.getElementById('invite-feedback');
+        
+        if(!emailCible || emailCible === auth.currentUser.email) {
+            feedback.style.color = 'red';
+            feedback.innerText = "Email invalide.";
+            return;
+        }
+
+        feedback.innerText = "Recherche de l'utilisateur...";
+        
+        try {
+            // 1. Chercher l'utilisateur par son email dans la collection 'users'
+            const q = query(collection(db, "users"), where("email", "==", emailCible));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                feedback.style.color = 'red';
+                feedback.innerText = "Utilisateur introuvable.";
+                return;
+            }
+
+            // On a trouvé l'ami potentiel
+            let friendUid = null;
+            querySnapshot.forEach(doc => { friendUid = doc.id; });
+
+            // 2. Vérifier si on est déjà amis ou si demande déjà envoyée (Optionnel pour faire simple on écrit direct)
+            // On écrit dans la sous-collection "invitations" de l'ami
+            // Structure : users/{friendUid}/invitations/{myUid}
+            
+            await setDoc(doc(db, "users", friendUid, "invitations", currentUserUID), {
+                fromEmail: auth.currentUser.email,
+                fromUid: currentUserUID,
+                date: new Date()
+            });
+
+            feedback.style.color = 'green';
+            feedback.innerText = "Invitation envoyée avec succès !";
+            document.getElementById('input-friend-email').value = "";
+
+        } catch (error) {
+            console.error(error);
+            feedback.style.color = 'red';
+            feedback.innerText = "Erreur lors de l'envoi.";
+        }
+    });
+
+    // --- FONCTION 2 : CHARGER LES DEMANDES REÇUES ---
+    async function chargerDemandes() {
+        if(!currentUserUID) return;
+        const container = document.getElementById('requests-list-container');
+        container.innerHTML = "Chargement...";
+
+        const ref = collection(db, "users", currentUserUID, "invitations");
+        const snap = await getDocs(ref);
+
+        container.innerHTML = "";
+        if(snap.empty) {
+            container.innerHTML = "<p style='color:#888; font-style:italic;'>Aucune demande en attente.</p>";
+            return;
+        }
+
+        snap.forEach(docInv => {
+            const data = docInv.data();
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            div.innerHTML = `
+                <div class="friend-info">
+                    <span class="friend-name">${data.fromEmail}</span>
+                    <span class="friend-score">Souhaite t'ajouter en ami</span>
+                </div>
+                <div>
+                    <button class="btn-action-small btn-accept" onclick="window.acceptFriend('${docInv.id}', '${data.fromEmail}')">✔</button>
+                    <button class="btn-action-small btn-decline" onclick="window.rejectFriend('${docInv.id}')">✖</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // --- FONCTION 3 : ACCEPTER UNE DEMANDE ---
+    // On doit l'attacher à window pour l'utiliser dans le HTML onclick ci-dessus
+    window.acceptFriend = async function(senderUid, senderEmail) {
+        if(!confirm("Accepter cet ami ?")) return;
+
+        try {
+            // 1. Ajouter sender dans MES amis : users/{me}/friends/{sender}
+            await setDoc(doc(db, "users", currentUserUID, "friends", senderUid), {
+                email: senderEmail,
+                since: new Date()
+            });
+
+            // 2. Ajouter MOI dans SES amis : users/{sender}/friends/{me}
+            await setDoc(doc(db, "users", senderUid, "friends", currentUserUID), {
+                email: auth.currentUser.email,
+                since: new Date()
+            });
+
+            // 3. Supprimer l'invitation
+            await deleteDoc(doc(db, "users", currentUserUID, "invitations", senderUid));
+
+            // Rafraichir
+            chargerDemandes();
+            alert("Ami ajouté !");
+        } catch(e) {
+            console.error(e);
+            alert("Erreur validation");
+        }
+    };
+
+    window.rejectFriend = async function(senderUid) {
+        if(!confirm("Supprimer la demande ?")) return;
+        try {
+            await deleteDoc(doc(db, "users", currentUserUID, "invitations", senderUid));
+            chargerDemandes();
+        } catch(e) { console.error(e); }
+    };
+
+// --- FONCTION 4 : CHARGER LA LISTE D'AMIS ET LEURS SCORES ---
+    async function chargerMesAmis() {
+        if(!currentUserUID) return;
+        const container = document.getElementById('friends-list-container');
+        container.innerHTML = "Chargement du classement...";
+
+        // 1. Récupérer mes propres infos
+        let amisData = [];
+        
+        try {
+            const myUserDoc = await getDoc(doc(db, "users", currentUserUID));
+            if(myUserDoc.exists()) {
+                const d = myUserDoc.data();
+                const sc = d.totalScore || 0;
+                const j = d.nbJoursValides || 0;
+                const moy = (j > 0) ? Math.round(sc / j) : 0;
+                
+                // On ajoute "Moi" au tableau
+                amisData.push({ 
+                    email: d.email, 
+                    moyenne: moy, 
+                    isMe: true // Marqueur pour te reconnaître
+                });
+            }
+        } catch(e) { console.error("Erreur chargement mon profil", e); }
+
+        // 2. Récupérer les amis
+        const friendsRef = collection(db, "users", currentUserUID, "friends");
+        const friendSnap = await getDocs(friendsRef);
+
+        if(!friendSnap.empty) {
+            const promises = friendSnap.docs.map(async (docAmis) => {
+                const fUid = docAmis.id;
+                const fEmail = docAmis.data().email;
+                
+                // Récupérer le score de l'ami
+                const userDoc = await getDoc(doc(db, "users", fUid));
+                let score = 0;
+                let jours = 0;
+                if(userDoc.exists()) {
+                    score = userDoc.data().totalScore || 0;
+                    jours = userDoc.data().nbJoursValides || 0;
+                }
+                // Calcul moyenne
+                let moyenne = (jours > 0) ? Math.round(score / jours) : 0;
+                
+                return { email: fEmail, moyenne: moyenne, isMe: false };
+            });
+
+            const friendsData = await Promise.all(promises);
+            // On fusionne ma liste avec celle des amis
+            amisData = amisData.concat(friendsData);
+        }
+
+        // 3. Trier par MOYENNE décroissante (Classement au %)
+        amisData.sort((a, b) => b.moyenne - a.moyenne);
+
+        // 4. Affichage
+        container.innerHTML = "";
+        
+        if (amisData.length === 1) {
+            // Si tu es seul
+            container.innerHTML += "<p style='font-size:0.8rem; color:#666; text-align:center; margin-bottom:10px;'>Invite des amis pour voir le classement !</p>";
+        }
+
+        amisData.forEach((ami, index) => {
+            let medaille = "";
+            if(index === 0) medaille = "🥇";
+            if(index === 1) medaille = "🥈";
+            if(index === 2) medaille = "🥉";
+
+            const div = document.createElement('div');
+            div.className = 'friend-item';
+            
+            // Gestion du nom affiché
+            let displayName = ami.email.split('@')[0];
+            let nameStyle = "";
+
+            if (ami.isMe) {
+                displayName = "Moi";
+                nameStyle = "font-weight: bold; color: #4caf50;"; // Vert et gras pour toi
+                div.style.backgroundColor = "#f0fdf4"; // Fond très léger vert pour te repérer
+                div.style.border = "1px solid #4caf50";
+            }
+
+            div.innerHTML = `
+                <div class="friend-info">
+                    <span class="friend-name" style="${nameStyle}">${medaille} ${displayName}</span>
+                </div>
+                <div style="font-weight:bold; color:#333; font-size: 1.1rem;">
+                    ${ami.moyenne}%
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // Petit bonus : vérifier s'il y a des demandes au chargement de la page pour afficher le badge
+    async function verifierDemandesRecues() {
+        if(!currentUserUID) return;
+        const ref = collection(db, "users", currentUserUID, "invitations");
+        const snap = await getDocs(ref);
+        const badge = document.getElementById('badge-demandes');
+        if(!snap.empty) {
+            badge.innerText = snap.size;
+            badge.style.display = "inline-block";
+        } else {
+            badge.style.display = "none";
+        }
+    }
+    
+    // On appelle la verif 2 secondes après le chargement
+    setTimeout(verifierDemandesRecues, 2000);
+
+ // --- GESTION DU PROFIL ---
+
+// Fonction unique et propre pour le changement de mot de passe
+window.updateUserPasswordFirebase = async (newPassword) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("Aucun utilisateur connecté.");
+
+    try {
+        await updatePassword(user, newPassword);
+    } catch (error) {
+        // Erreur spécifique Firebase si la session est trop ancienne
+        if (error.code === 'auth/requires-recent-login') {
+            throw new Error("Par sécurité, veuillez vous déconnecter et vous reconnecter avant de changer votre mot de passe.");
+        }
+        throw error;
+    }
+};
+
+// Suppression de compte
+window.deleteUserAccountFirebase = async () => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("Utilisateur non connecté.");
+    
+    const uid = user.uid;
+    await deleteDoc(doc(db, "users", uid));
+    await deleteUser(user);
+};
+
+//Email update function
+window.updateUserEmailFirebase = async (newEmail) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("Aucun utilisateur connecté.");
+
+    try {
+        await updateEmail(user, newEmail);
+        // Optionnel : Mettre à jour l'email dans la collection 'users' de Firestore si vous stockez l'email là-bas
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { email: newEmail });
+    } catch (error) {
+        if (error.code === 'auth/requires-recent-login') {
+            throw new Error("Par sécurité, veuillez vous déconnecter et vous reconnecter avant de changer votre email.");
+        }
+        throw error;
+    }
+};
+
+</script>
+            
+    <!-- code fait par @djahniss on GitHub 
+    effectuer en pfmp(stage) -->
+</body>
+</html>
+
